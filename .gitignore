@@ -1,7 +1,8 @@
 node_modules
-/#src
-/#src/scss
-*.html
+/src
+/src/*
+**/src/
+src
 gulpfile.js
 package-lock.json
 package.json
