@@ -1,0 +1,16 @@
+body {
+  font-size: 20px;
+  display: flex;
+  color: green;
+  box-sizing: content-box;
+}
+
+span {
+  font-size: 20px;
+}
+
+@media (max-width: 767px) {
+  span {
+    font-size: 15px;
+  }
+}
