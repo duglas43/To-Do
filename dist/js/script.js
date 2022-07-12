@@ -1,33 +1,8 @@
 "use strict";
 document.addEventListener("DOMContentLoaded", () => {
-    // Быстрые действия
-    localStorage.setItem("projects", JSON.stringify([]));
-    let JS__project__list = JSON.parse(localStorage.getItem("projects"));
-    updateProjectAside(".project-list");
-
-    // дефолтные странички
-    const home__page = document.querySelector(".page__item-home"),
-        today__page = document.querySelector(".page__item-today"),
-        week__page = document.querySelector(".page__item-week");
-    // список проектов
-    const DOM__project__list = document.querySelector(".project-list"), //ul
-        project__item__btn__list =
-            document.querySelectorAll(".project-item__btn");
-    const aside=document.querySelector(".aside");
-    // Input
-    const data__input = document.querySelector(".task__right-input"),
-        project__input = document.querySelector(".add-project__modal-input"),
-        task__input = document.querySelector(".add-task__modal-input");
-    // Кнопки
-    const add__project__btn = document.querySelector(".add-project-wrapper");
-    const add__project__add = document.querySelector(".add-project__modal-add");
-    const cancel__project__btn = document.querySelector(
-        ".add-project__modal-cancel"
-    );
-    const project__modal = add__project__btn.querySelector(".project__modal");
-
     class Project {
-        name = home;
+        active=false;
+        name;
         tasks;
         constructor(name) {
             if (name.length > 20) {
@@ -38,13 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
             this.tasks = [];
         }
         addTask(task) {
-            this.tasks.push(task);
+            this.tasks.push (task);
         }
         deleteTask(taskName) {
             this.tasks = this.tasks.filter((task) => task.name != taskName);
         }
     }
     class Task {
+        completed=false;
         name;
         dueDate = "No Date";
         constructor(name, dueDate) {
@@ -52,111 +28,164 @@ document.addEventListener("DOMContentLoaded", () => {
             this.dueDate = dueDate;
         }
     }
-    // Выводит название активного проекта
-    function nowProjectActive() {
-        if (home__page.classList.contains("active"))
-            return home__page.querySelector(".page__item-title").textContent;
-        else if (today__page.classList.contains("active"))
-            return today__page.querySelector(".page__item-title").textContent;
-        else if (week__page.classList.contains("active"))
-            return week__page.querySelector(".page__item-title").textContent;
-        for (let elem of project__item__btn__list) {
-            if (elem.classList.contains("active"))
-                return elem.querySelector(".project-item__btn-title")
-                    .textContent;
-        }
-    }
-    // Добавляет элементу класс active
+    // Aside
+    const aside=document.querySelector(".aside"); // блок с проектами+страницами
+    const pageItems=document.querySelectorAll(".page__item"); // массив default страниц
+    const projectList=document.querySelector(".project-list"); // блок с проектами
+    const projectItems=document.querySelectorAll(".project-item__btn");// массив проектов
+    const addProject=document.querySelector(".add-project-wrapper");//кнопка добавления проекта
+    const projectModal=document.querySelector(".project__modal");// модальное окно добавления проекта
+    const addProjectModal=document.querySelector(".add-project__modal-add");// кнопка добавления проекта в модальном окне
+    const cancelProjectModal=document.querySelector(".add-project__modal-cancel");// кнопка отмены добавления проекта в модальном окне
+    const inputProjectModal=document.querySelector(".add-project__modal-input");// поле ввода названия проекта в модальном окне
+    // инициализация проектов из локального хранилища
+    let projects;
+    localStorage.projects===undefined ? projects=[] : projects=JSON.parse(localStorage.getItem("projects"));
+    // создание default страниц
+    let homepage=new Project("Домашняя страница");
+    homepage.active=true;
+    let today=new Project("Задачи на сегодня");
+    let week= new Project("Задачи этой недели");
+    let pages;
+    localStorage.pages === undefined? pages=[homepage, today, week] : pages=JSON.parse(localStorage.getItem("pages"));
+    let pagesProjectsList= pages.concat(projects);// массив default страниц и проектов
+    localStorage.setItem("pagesProjects", JSON.stringify(pagesProjectsList));
+    localStorage.setItem("pages", JSON.stringify(pages));
+    updateLocal();
+    updateProjectHTML()
+    // Добавляет класс active к элементу
     function setActive(element) {
-        if (!element.classList.contains("active")) {
+        if (element.active!=undefined){
+            projects.forEach(i=>i.active=false);
+            pages.forEach(i=>i.active=false);
+            element.active ? element.active=false : element.active=true;
+        }
+        else{
             element.classList.add("active");
         }
+        updateLocal();
     }
-    // Убирает у элемента класс active
+    // Удаляет класс active у элемента
     function delAcive(element) {
-        element.classList.remove("active");
+        if (element.active!==undefined){
+            projects.forEach(i=>i.active=false);
+            pages.forEach(i=>i.active=false);
+            element.active ? element.active=false : element.active=true;
+        }
+        else{
+            element.classList.remove("active");
+        }
+        updateLocal();
     }
-    function delActiveProject(){
-        home__page.classList.remove("active");
-        today__page.classList.remove("active")
-        week__page.classList.remove("active")
-        for (let elem of project__item__btn__list) {
-            elem.classList.remove("active");
+    // Показывает активное меню
+    function nowProjectActive() {
+        for(let elem of pagesProjectsList){
+            if(elem.active){
+                return elem;
+            }
         }
     }
-    // Обноавляет список проектов из localStorage
-    function updateProjectAside(parent) {
-        let project__list = JSON.parse(localStorage.getItem("projects"));
-        parent = document.querySelector(`${parent}`);
+    // Обновляет локальное хранилище
+    function updateLocal(){
+        pagesProjectsList= pages.concat(projects);
+        localStorage.setItem("projects", JSON.stringify(projects));
+        localStorage.setItem("pagesProjects", JSON.stringify(pagesProjectsList));
+        localStorage.setItem("pages", JSON.stringify(pages));
+    }
+    // Удаляет прокт из локального хранилища по имени
+    function removeProject(id){
+        projects=projects.filter((project) => project.id != id);
+        updateLocal();
+    }
+    // 
+    function updateProjectHTML() {
+        let parent = document.querySelector(".project-list");
         parent.innerHTML = "";
-        for (let i = 0; i < project__list.length; i++) {
+        for (let i = 0; i < projects.length; i++) {
             let newProject = document.createElement("li");
             newProject.classList.add("project-item");
+            newProject.dataset.id=i+3;
             newProject.innerHTML = `
             <button type="button" class="project-item__btn">
                 <div class="project-item__btn-left">
                     <svg class="page__icon">
                         <use xlink:href="#task-done"></use>
                     </svg>
-                    <p class="project-item__btn-title">${project__list[i].name}</p>
+                    <p class="project-item__btn-title">${projects[i].name}</p>
                 </div>
                 <p class="project-item__btn-del">&#10006</p>
             </button>
             `;
             parent.append(newProject);
         }
+
     }
-    function removeProject(name){
-        JS__project__list.forEach((item,i)=>{
-            if(item.name==name){
-                JS__project__list.splice(i,1);
-            }
-        })
-    }
-    // Event Listeners
-    add__project__btn.onclick = (e) => {
-        if (e.target.classList.contains("add-project")) {
-            setActive(project__modal);
-        }
-    };
-    cancel__project__btn.onclick = () => {
-        delAcive(project__modal);
-    };
-    add__project__add.onclick = () => {
-        let valid = [
-            ...document.querySelectorAll(".project-item__btn-title"),
-        ].every((n) => n.textContent != project__input.value);
+    function addProjectfunction(e){
+        let valid=projects.every(n=>n.name!=inputProjectModal.value);
         if (valid) {
-            let newProject = new Project(project__input.value);
-            JS__project__list.push(newProject);
-            localStorage.setItem("projects", JSON.stringify(JS__project__list));
-            delAcive(project__modal);
-            updateProjectAside(".project-list");
-        } else {
-            return
+            projects.push(new Project(inputProjectModal.value));
+            updateLocal();
+            updateProjectHTML();
+            delAcive(projectModal);
+            e.stopPropagation();
         }
-    };
-    aside.addEventListener("click",(e)=>{
-        if(!(e.target.closest("button") || e.target.closest("li"))) return;
-        if(e.target.closest("button")!=null){
-            delActiveProject();
+    }
+    function updateTaskHTML(){
+        document.querySelector(".tasks__title").textContent=nowProjectActive().name;
+        let parent = document.querySelector(".task-list");
+        parent.innerHTML = "";
+        for (let i = 0; i < nowProjectActive().tasks.length; i++) {
+            let newTask = document.createElement("li");
+            newTask.classList.add("task");
+            newTask.innerHTML = `
+            <li class="task">
+                <div class="task__left">
+                    <p class="task__left-circle"></p>
+                    <p class="task__left-title">${nowProjectActive().tasks[i].name}</p>
+                </div>
+                <div class="task__right">
+                    <p class="task__right-date">${nowProjectActive().tasks[i].dueDate}</p>
+                    <input type="date" name="task-date-input" class="task__right-input">
+                    <p class="task__right-del">&#10006</p>
+                </div>
+            </li>
+            `;
+            parent.append(newTask);
+        }
+    }
+    // Event listeners
+    addProject.onclick=()=>{setActive(projectModal)};
+    cancelProjectModal.onclick=(e)=>{
+        delAcive(projectModal);
+        e.stopPropagation();
+    }
+    addProjectModal.onclick=(e)=>{
+        addProjectfunction(e);
+    }
+    aside.addEventListener("click", (e) => {
+        if (!e.target.closest("button") && !e.target.closest("li")) return;
+        if(e.target.closest("li")){
+            document.querySelectorAll(".project-item__btn").forEach(item=>{
+                delAcive(item);
+            })
+            for(let elem of pageItems){
+                delAcive(elem);
+            }
             setActive(e.target.closest("button"));
-        }
-        if(e.target.closest("li")!=null){
-            delActiveProject();
-            setActive(e.target.closest("li"));
+            setActive(pagesProjectsList[e.target.closest("li").dataset.id]);
+            updateTaskHTML();
+
         }
         if(e.target.classList.contains("project-item__btn-del")){
-            let project__name=e.target.closest("button").querySelector(".project-item__btn-title").textContent;
-            removeProject(project__name);
-            localStorage.setItem("projects", JSON.stringify(JS__project__list));
-            console.log(project__name)
-            updateProjectAside(".project-list");
+            removeProject(e.target.closest("li").dataset.id);
+            updateProjectHTML();
+            updateTaskHTML();
         }
-    })
+    });
+    
+    
 
 
 
+});//DomContentLoaded
 
-
-}); //DomContentLoaded

@@ -55,28 +55,34 @@
 
 	<aside class="aside">
 			<ul class="pages">
-				<button type="button" class="page__item page__item-home active">
-					<svg class="page__icon">
-						<use xlink:href="#home"></use>
-					</svg>
-					<p class="page__item-title">Домашняя страница</p> 
-				</button>
-				<button type="button" class="page__item page__item-today">
-					<svg class="page__icon">
-						<use xlink:href="#calendar"></use>
-					</svg>
-					<p class="page__item-title">Задачи на сегодня</p>
-				</button>
-				<button type="button" class="page__item page__item-week">
-					<svg class="page__icon">
-						<use xlink:href="#calendar__week"></use>
-					</svg>
-					<p class="page__item-title">Задачи этой недели</p>
-				</button>
+				
+				<li data-id="0">
+					<button type="button" class="page__item page__item-home active">
+						<svg class="page__icon">
+							<use xlink:href="#home"></use>
+						</svg>
+						<p class="page__item-title">Домашняя страница</p>
+					</button>
+				</li>
+				<li data-id="1">
+					<button type="button" class="page__item page__item-today">
+						<svg class="page__icon">
+							<use xlink:href="#calendar"></use>
+						</svg>
+						<p class="page__item-title">Задачи на сегодня</p>
+					</button>
+				</li>
+				<li data-id="2">
+					<button type="button" class="page__item page__item-week">
+						<svg class="page__icon">
+							<use xlink:href="#calendar__week"></use>
+						</svg>
+						<p class="page__item-title">Задачи этой недели</p>
+					</button>
+				</li>
 			</ul>
 			<p class="project__title">Проекты</p>
-			<ul class="project-list">
-				
+			<ul class="project-list">	
 				<li class="project-item">
 					<button type="button" class="project-item__btn">
 						<div class="project-item__btn-left">
@@ -88,20 +94,6 @@
 						<p class="project-item__btn-del">&#10006</p>
 					</button>
 				</li>
-
-
-				<li class="project-item">
-					<button type="button" class="project-item__btn active">
-						<div class="project-item__btn-left">
-							<svg class="page__icon">
-								<use xlink:href="#task-done"></use>
-							</svg>
-							<p class="project-item__btn-title">Название проекта1</p>
-						</div>
-						<p class="project-item__btn-del">&#10006</p>
-					</button>
-				</li>
-
 			</ul>
 			<div class="add-project-wrapper">
 				<p class="add-project"><span>+</span>Добавить проект</p>
