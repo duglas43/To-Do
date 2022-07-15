@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
             this.tasks = [];
         }
         addTask(task) {
-            this.tasks.push (task);
+            this.tasks.push(task);
         }
         deleteTask(taskName) {
             this.tasks = this.tasks.filter((task) => task.name != taskName);
@@ -22,8 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
     class Task {
         completed=false;
         name;
-        dueDate = "No Date";
-        constructor(name, dueDate) {
+        dueDate="No Date";
+        constructor(name, dueDate="No Date") {
             this.name = name;
             this.dueDate = dueDate;
         }
@@ -44,15 +44,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // создание default страниц
     let homepage=new Project("Домашняя страница");
     homepage.active=true;
-    let today=new Project("Задачи на сегодня");
+    let todayPage=new Project("Задачи на сегодня");
     let week= new Project("Задачи этой недели");
     let pages;
-    localStorage.pages === undefined? pages=[homepage, today, week] : pages=JSON.parse(localStorage.getItem("pages"));
+    localStorage.pages === undefined? pages=[homepage, todayPage, week] : pages=JSON.parse(localStorage.getItem("pages"));
     let pagesProjectsList= pages.concat(projects);// массив default страниц и проектов
-    localStorage.setItem("pagesProjects", JSON.stringify(pagesProjectsList));
-    localStorage.setItem("pages", JSON.stringify(pages));
+    projects.forEach(i=>i.active=false);
+    pages.forEach(i=>i.active=false);
+    pages[0].active=true;
     updateLocal();
-    updateProjectHTML()
+    updateProjectHTML();
+    updateTaskHTML();
     // Добавляет класс active к элементу
     function setActive(element) {
         if (element.active!=undefined){
@@ -137,21 +139,31 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < nowProjectActive().tasks.length; i++) {
             let newTask = document.createElement("li");
             newTask.classList.add("task");
+            newTask.dataset.id=i;
             newTask.innerHTML = `
-            <li class="task">
-                <div class="task__left">
-                    <p class="task__left-circle"></p>
-                    <p class="task__left-title">${nowProjectActive().tasks[i].name}</p>
-                </div>
-                <div class="task__right">
-                    <p class="task__right-date">${nowProjectActive().tasks[i].dueDate}</p>
-                    <input type="date" name="task-date-input" class="task__right-input">
-                    <p class="task__right-del">&#10006</p>
-                </div>
-            </li>
+            <div class="task__left">
+                <p class="task__left-circle"></p>
+                <p class="task__left-title">${nowProjectActive().tasks[i].name}</p>
+            </div>
+            <div class="task__right">
+                <p class="task__right-date">${nowProjectActive().tasks[i].dueDate}</p>
+                <input type="date" name="task-date-input" class="task__right-input">
+                <p class="task__right-del">&#10006</p>
+            </div>
             `;
             parent.append(newTask);
         }
+    }
+    function changeProject(e){
+        document.querySelectorAll(".project-item__btn").forEach(item=>{
+            delAcive(item);
+        })
+        for(let elem of pageItems){
+            delAcive(elem);
+        }
+        setActive(e.target.closest("button"));
+        setActive(pagesProjectsList[e.target.closest("li").dataset.id]);
+        updateTaskHTML();
     }
     // Event listeners
     addProject.onclick=()=>{setActive(projectModal)};
@@ -162,19 +174,28 @@ document.addEventListener("DOMContentLoaded", () => {
     addProjectModal.onclick=(e)=>{
         addProjectfunction(e);
     }
+    addProjectModal.addEventListener("keydown", (e) => {
+        if (e.keyCode == 13) {
+            addProjectfunction(e);
+        }
+    })
     aside.addEventListener("click", (e) => {
         if (!e.target.closest("button") && !e.target.closest("li")) return;
-        if(e.target.closest("li")){
-            document.querySelectorAll(".project-item__btn").forEach(item=>{
-                delAcive(item);
-            })
-            for(let elem of pageItems){
-                delAcive(elem);
-            }
-            setActive(e.target.closest("button"));
-            setActive(pagesProjectsList[e.target.closest("li").dataset.id]);
-            updateTaskHTML();
-
+        if(e.target.closest("li").dataset.id==1){
+            document.querySelector(".add-task-wrapper").classList.add("hidden");
+            pages[1].tasks=addTodayTask();
+            updateLocal();
+            changeProject(e);
+        }
+        if(e.target.closest("li").dataset.id==2){
+            document.querySelector(".add-task-wrapper").classList.add("hidden");
+            pages[2].tasks=addWeekTask();
+            updateLocal();
+            changeProject(e);
+        }
+        if(e.target.closest("li").dataset.id==0 || e.target.closest("li").dataset.id>=3){
+            document.querySelector(".add-task-wrapper").classList.remove("hidden");
+            changeProject(e);
         }
         if(e.target.classList.contains("project-item__btn-del")){
             removeProject(e.target.closest("li").dataset.id);
@@ -183,6 +204,106 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
     
+    //task
+    function addTodayTask(){
+        function formatTodayDate() {
+            var d = new Date(),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+        
+            if (month.length < 2) 
+                month = '0' + month;
+            if (day.length < 2) 
+                day = '0' + day;
+        
+            return [year, month, day].join('-');
+        }
+        let today=formatTodayDate();
+        let todayTasks=[];
+        let allTasks=[]
+        let pagesProjectsListCopy=[...pagesProjectsList];
+        pagesProjectsListCopy.splice(1,2);
+        for(let i=0;i<pagesProjectsListCopy.length;i++){
+            allTasks.push(...pagesProjectsListCopy[i].tasks);
+        }
+        for(let i=0;i<allTasks.length;i++){
+            if(allTasks[i].dueDate==today){
+                todayTasks.push(allTasks[i]);
+            }
+        }
+        return(todayTasks)
+    }
+    function addWeekTask(){
+        let today=new Date();
+        let weekTasks=[];
+        let allTasks=[]
+
+        let pagesProjectsListCopy=[...pagesProjectsList];
+        pagesProjectsListCopy.splice(1,2);
+        for(let i=0;i<pagesProjectsListCopy.length;i++){
+            allTasks.push(...pagesProjectsListCopy[i].tasks);
+        }
+        
+        for(let i=0;i<allTasks.length;i++){
+            let inputDate=new Date(allTasks[i].dueDate);
+            if(inputDate.getTime()-today.getTime()<=604800000 && inputDate.getDay()>=today.getDay() ){
+                weekTasks.push(allTasks[i]);
+            }
+        }
+        return(weekTasks);
+        
+    }
+    let taskList=document.querySelector(".task-list");
+    let taskAdd=document.querySelector(".add-task-wrapper");
+    let taskAddModal=taskAdd.querySelector(".add-task__modal");
+    let taskAddInput=taskAdd.querySelector(".add-task__modal-input");
+    let taskAddCancel=taskAdd.querySelector(".add-task__modal-cancel");
+    let taskAddAdd=taskAdd.querySelector(".add-task__modal-add");
+
+    taskAdd.addEventListener("click",(e)=>{
+        setActive(taskAddModal);
+    })
+    taskAddCancel.onclick=(e)=>{
+        delAcive(taskAddModal);
+        e.stopPropagation();
+    }
+    taskAddAdd.onclick=(e)=>{
+        nowProjectActive().tasks.push(new Task(taskAddInput.value));
+        updateLocal();
+        updateTaskHTML();
+        delAcive(taskAddModal);
+        e.stopPropagation();
+    }
+    taskList
+    taskList.addEventListener("click",(e)=>{
+        if(e.target.closest(".task__right-del") || e.target.closest(".task__left-circle")){
+        nowProjectActive().tasks.splice(e.target.closest("li").dataset.id,1);
+        updateLocal();
+        updateTaskHTML();
+        }
+        else if(e.target.closest(".task__right-date")){
+            setActive(e.target.nextElementSibling);
+        }
+    })
+    taskList.addEventListener("change",(e)=>{
+        if(e.target.closest(".task__right-input")){
+            nowProjectActive().tasks[e.target.closest("li").dataset.id].dueDate=e.target.value;
+            updateLocal();
+            updateTaskHTML();
+            addTodayTask();
+        }
+    })
+    
+    
+    
+    
+    
+    
+     
+
+
+
     
 
 
