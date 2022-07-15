@@ -119,12 +119,14 @@ body {
 .header {
   padding: 30px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
   background-color: rgb(65, 65, 65);
 }
 
 .header .logo {
   display: flex;
+  align-items: center;
 }
 
 .header .logo h1 {
@@ -166,6 +168,7 @@ main {
 
 .page__item {
   display: flex;
+  width: 100%;
   align-items: center;
   padding: 10px;
   font-size: 18px;
@@ -459,10 +462,6 @@ main {
 }
 
 @media (max-width: 768px) {
-  .header .burger {
-    display: block;
-  }
-
   .aside {
     display: none;
   }
@@ -473,5 +472,38 @@ main {
     z-index: 1000;
     width: 100vw;
     height: calc(100vh - 160px);
+  }
+
+  .header .burger {
+    display: block;
+  }
+
+  .header .logo h1 {
+    font-size: 30px;
+  }
+
+  .tasks__title {
+    text-align: center;
+  }
+
+  .project__title {
+    font-size: 30px;
+  }
+
+  .add-project {
+    font-size: 30px;
+  }
+
+  .page__item {
+    font-size: 25px;
+  }
+
+  .page__icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .project-item__btn {
+    font-size: 30px;
   }
 }
