@@ -161,6 +161,9 @@ document.addEventListener("DOMContentLoaded", () => {
         for(let elem of pageItems){
             delAcive(elem);
         }
+        if(aside.classList.contains("active")){
+            aside.classList.remove("active");
+        }
         setActive(e.target.closest("button"));
         setActive(pagesProjectsList[e.target.closest("li").dataset.id]);
         updateTaskHTML();
@@ -275,7 +278,15 @@ document.addEventListener("DOMContentLoaded", () => {
         delAcive(taskAddModal);
         e.stopPropagation();
     }
-    taskList
+    taskAdd.addEventListener("keydown",(e)=>{
+        if(e.keyCode==13){
+            nowProjectActive().tasks.push(new Task(taskAddInput.value));
+            updateLocal();
+            updateTaskHTML();
+            delAcive(taskAddModal);
+            e.stopPropagation();
+        }
+    })
     taskList.addEventListener("click",(e)=>{
         if(e.target.closest(".task__right-del") || e.target.closest(".task__left-circle")){
         nowProjectActive().tasks.splice(e.target.closest("li").dataset.id,1);
@@ -294,19 +305,10 @@ document.addEventListener("DOMContentLoaded", () => {
             addTodayTask();
         }
     })
-    
-    
-    
-    
-    
-    
-     
-
-
-
-    
-
-
-
+    // Мобильная адаптация
+    let burger=document.querySelector(".burger");
+    burger.onclick=(e)=>{
+        setActive(aside);
+    }
 });//DomContentLoaded
 
