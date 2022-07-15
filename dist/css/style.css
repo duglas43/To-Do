@@ -150,7 +150,6 @@ body {
 
 main {
   display: flex;
-  min-height: calc(100vh - 80px - 80px);
 }
 
 .aside {
@@ -468,10 +467,11 @@ main {
 
   .aside.active {
     display: block;
-    position: absolute;
-    z-index: 1000;
-    width: 100vw;
-    height: calc(100vh - 160px);
+    width: 100%;
+  }
+
+  .main {
+    min-height: 100%;
   }
 
   .header .burger {
