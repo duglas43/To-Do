@@ -235,6 +235,7 @@ main {
 }
 
 .add-project {
+  margin-bottom: 90px;
   color: #000;
   margin-top: 10px;
   cursor: pointer;
@@ -320,6 +321,7 @@ main {
 }
 
 .tasks .add-task {
+  margin-bottom: 90px;
   margin-top: 10px;
   cursor: pointer;
 }
@@ -502,6 +504,10 @@ main {
   }
 
   .project-item__btn {
+    font-size: 30px;
+  }
+
+  .tasks .tasks__title {
     font-size: 30px;
   }
 }
