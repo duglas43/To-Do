@@ -105,6 +105,10 @@ h6 {
   background-color: rgb(216, 216, 216);
 }
 
+.hidden {
+  display: none;
+}
+
 body {
   font-family: "Roboto", sans-serif;
   font-size: 16px;
