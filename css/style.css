@@ -143,10 +143,48 @@ body {
 }
 
 .header .burger {
-  font-size: 40px;
-  color: #fff;
   display: none;
-  display: none;
+  width: 50px;
+  height: 35px;
+  cursor: pointer;
+  position: relative;
+}
+
+.header .burger__line {
+  display: block;
+  width: 100%;
+  height: 4px;
+  background-color: white;
+  position: absolute;
+  left: 0;
+  transition: 0.3s all linear;
+}
+
+.header .burger__line1 {
+  top: 0;
+}
+
+.header .burger__line2,
+.header .burger__line3 {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.header .burger__line4 {
+  bottom: 0;
+}
+
+.header .burger.active .burger__line1,
+.header .burger.active .burger__line4 {
+  opacity: 0;
+}
+
+.header .burger.active .burger__line2 {
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.header .burger.active .burger__line3 {
+  transform: translateY(-50%) rotate(-45deg);
 }
 
 main {
