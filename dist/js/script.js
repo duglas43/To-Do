@@ -164,6 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if(aside.classList.contains("active")){
             aside.classList.remove("active");
             document.querySelector(".tasks").style.display="block";
+            burger.classList.toggle("active");
         }
         setActive(e.target.closest("button"));
         setActive(pagesProjectsList[e.target.closest("li").dataset.id]);
@@ -309,8 +310,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Мобильная адаптация
     let burger=document.querySelector(".burger");
     burger.onclick=(e)=>{
-        setActive(aside);
-        document.querySelector(".tasks").style.display="none";
+        burger.classList.toggle("active");
+        aside.classList.toggle("active");
+        aside.classList.contains("active")?document.querySelector(".tasks").style.display="none":document.querySelector(".tasks").style.display="block";
     }
     
 });//DomContentLoaded
