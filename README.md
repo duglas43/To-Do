@@ -7,34 +7,6 @@ Hello world от мира JavaScript. To-do List
 
 https://duglas43.github.io/To-Do/
 
-
-## Как запустить локально.
-
-Клонируйте проект
-
-```bash
-  git clone https://github.com/duglas43/To-Do.git
-```
-
-Перейдите в директорию проекта
-
-```bash
-  cd my-project
-```
-
-Установите зависимости
-
-```bash
-  npm install
-```
-
-Запустите сервер
-
-```bash
-  npm run start
-```
-
-
 ## Что узнал
 
 Этот проект дал мне важное понимание того, как нужно работать с браузерным Api, local Storage, обработчиками событий.
